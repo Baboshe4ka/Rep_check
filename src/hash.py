@@ -7,7 +7,7 @@ import logging
 import json
 
 
-test_path = "C:\\Users\\Артём\\Desktop\\test_dir"
+test_path = None
 extentions_list= ['pdf', 'txt', 'docx', 'md']
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ⓘ ")
@@ -18,7 +18,7 @@ def dir_dict(path):
     with os.scandir(path) as it:
         for entry in it:
             if not entry.name.startswith(".") and entry.is_file:
-                print(f'❖ File {entry.name} processed')
+                print(f'❖   File {entry.name} processed')
                 lits_of_files.append(entry.name)
     logger.info("Processing end")
     sorted_list= list_sort(lits_of_files)
@@ -36,11 +36,11 @@ def list_sort(lits_of_files):
                 file_ext = file[1]
                 if file_ext.lower() in extentions_list:
                     sorted_list.append(dict(name = i, extention= file_ext))
-                    print(f'🟢 File {i} added')
+                    print(f'🟢   File {i} added')
                 else:
-                    print(f'🔴 File {i} denied')    
+                    print(f'🔴   File {i} denied')    
             else:
-                print(f'⛔ Incorrect naming: {i} ')
+                print(f'⛔   Incorrect naming: {i} ')
             bar()
     return sorted_list
 
@@ -80,22 +80,38 @@ def json_creator(path):
     with open(f"{path}//hash.json", "w") as f:
         json.dump(hash_list, f, indent=4)
     logger.info("JSON created")
+    return "JSON created"
 
 def json_reader(path):
-    with open(f"{path}//hash.json", "r") as f:
-       json_data= json.load( f)   
-    hash_list= hash_encoder(dir_dict(path))
-    for file in hash_list:
-        for json_file in json_data:
-            if file["name"] == json_file["name"]:
-                if file["hash_sum"] == json_file["hash_sum"]:
-                    name = file["name"]
-                    print(f"✔️   {name} ok")
-                else:
-                    name = file["name"]
-                    print(f"❌   {name} has been changed")
+    try:
+        with open(f"{path}//hash.json", "r") as f:
+            json_data= json.load(f)   
+        hash_list= hash_encoder(dir_dict(path))
+        result_list= []
+        for file in hash_list:
+            for json_file in json_data:
+                if file["name"] == json_file["name"]:
+                    if file["hash_sum"] == json_file["hash_sum"]:
+                        name = file["name"]
+                        text = f"✔️   {name} ok"
+                        print(text)
+                        result_list.append(text)
+                    else:
+                        name = file["name"]
+                        text = f"❌   {name} has been changed"
+                        print(text)
+                        result_list.append(text)
+        return result_list
+    except FileNotFoundError:
+        print("👀   File with hash not found")
 
-json_reader(test_path)
+
+def main():
+    pass 
+
+
+if __name__ == "main":
+    main()
 
 
 
