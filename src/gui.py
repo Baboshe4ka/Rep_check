@@ -7,18 +7,26 @@ customtkinter.set_default_color_theme("dark-blue")
 
 root = customtkinter.CTk()
 root.geometry("500x300")
+root.title("Rep Check")
 
 #funcs
 def create_json():
     if len(path_entry.get()) != 0:
         resp= hash.json_creator(path_entry.get())
-        output_text.configure(text = resp)
+        if resp !=1:
+            output_text.configure(text = resp)
+        else:
+            output_text.configure(text = "⛔   Invalid path")
+    
 
 def check_json():
     if len(path_entry.get()) != 0:
         resp= hash.json_reader(path_entry.get())
-        text = "\n".join(resp)
-        output_text.configure(text = text)
+        if resp !=1:
+            text = "\n".join(resp)
+            output_text.configure(text = text)
+        else:
+            output_text.configure(text = "👀   File with hash not found")    
 
 #output
 output_frame = customtkinter.CTkFrame(master=root)
